@@ -1,18 +1,51 @@
-# Salesforce DX Project: Next Steps
+# Logger
 
-Now that you’ve created a Salesforce DX project, what’s next? Here are some documentation resources to get you started.
+This SFDX project is designed to capture information and errors into a Log object. This framework systematically records essential details such as Class Name, Method Name, Line Number, Messages, Context, Stack Trace, and additional pertinent information. Its purpose is to provide comprehensive logging capabilities for efficient monitoring and debugging within the Salesforce environment.
 
-## How Do You Plan to Deploy Your Changes?
+## Usage
 
-Do you want to deploy a set of changes, or create a self-contained application? Choose a [development model](https://developer.salesforce.com/tools/vscode/en/user-guide/development-models).
+To log a simple text
 
-## Configure Your Salesforce DX Project
+```bash
+Logger.getInstance().info('Simple info text').publish();
+Logger.getInstance().addError('Simple error text').publish();
+```
 
-The `sfdx-project.json` file contains useful configuration information for your project. See [Salesforce DX Project Configuration](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_ws_config.htm) in the _Salesforce DX Developer Guide_ for details about this file.
+![image](https://github.com/gskumar1609/Logger/assets/55816916/f27dfe6e-4734-469c-9ecb-75e4312cd80a)
 
-## Read All About It
+To capture exception information
 
-- [Salesforce Extensions Documentation](https://developer.salesforce.com/tools/vscode/)
-- [Salesforce CLI Setup Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm)
-- [Salesforce DX Developer Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm)
-- [Salesforce CLI Command Reference](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm)
+```bash
+try{
+
+}catch(Exception e){
+    Logger.getInstance().addError(e).publish();
+}
+```
+
+![image](https://github.com/gskumar1609/Logger/assets/55816916/80a378ae-666c-4c19-99e8-95435b5b0119)
+
+To capture errors in List<Database.SaveResult>
+
+```bash
+Database.SaveResult[] result = Database.update(records, false);
+Logger.getInstance().addError(result).publish();
+```
+
+To log SOQL queries consumed, rows retrieved, CPU time consumed and Heap size use below statement
+
+```bash
+Logger.logLimits();
+```
+
+![image](https://github.com/gskumar1609/Logger/assets/55816916/78d2f630-ff23-4283-97d2-f228f1edf605)
+
+Additionally, this framework logs BatchApexErrorEvent platform events, which capture information from all batches raising BatchApexErrorEvent platform events. To utilize this feature, the only requirement is to implement Database.RaisesPlatformEvents on the batch class.
+
+```bash
+public class <BatchClassName> implements Database.Batchable<sObject>, Database.RaisesPlatformEvents{
+
+}
+```
+
+![image](https://github.com/gskumar1609/Logger/assets/55816916/3bb224ae-a187-4fcd-9c89-7f419e4d5085)
